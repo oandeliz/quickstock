@@ -502,15 +502,15 @@ class $OrdersTableTable extends OrdersTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumn<String> status = GeneratedColumn<String>(
-    'status',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<OrderStatus, String> status =
+      GeneratedColumn<String>(
+        'status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<OrderStatus>($OrdersTableTable.$converterstatus);
   static const VerificationMeta _deliveryTokenMeta = const VerificationMeta(
     'deliveryToken',
   );
@@ -595,14 +595,6 @@ class $OrdersTableTable extends OrdersTable
     } else if (isInserting) {
       context.missing(_customerIdMeta);
     }
-    if (data.containsKey('status')) {
-      context.handle(
-        _statusMeta,
-        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_statusMeta);
-    }
     if (data.containsKey('delivery_token')) {
       context.handle(
         _deliveryTokenMeta,
@@ -654,10 +646,12 @@ class $OrdersTableTable extends OrdersTable
         DriftSqlType.string,
         data['${effectivePrefix}customer_id'],
       )!,
-      status: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}status'],
-      )!,
+      status: $OrdersTableTable.$converterstatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}status'],
+        )!,
+      ),
       deliveryToken: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}delivery_token'],
@@ -681,12 +675,15 @@ class $OrdersTableTable extends OrdersTable
   $OrdersTableTable createAlias(String alias) {
     return $OrdersTableTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<OrderStatus, String, String> $converterstatus =
+      const EnumNameConverter(OrderStatus.values);
 }
 
 class OrdersTableData extends DataClass implements Insertable<OrdersTableData> {
   final String id;
   final String customerId;
-  final String status;
+  final OrderStatus status;
   final String deliveryToken;
   final double totalAmount;
   final bool isSynced;
@@ -705,7 +702,11 @@ class OrdersTableData extends DataClass implements Insertable<OrdersTableData> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['customer_id'] = Variable<String>(customerId);
-    map['status'] = Variable<String>(status);
+    {
+      map['status'] = Variable<String>(
+        $OrdersTableTable.$converterstatus.toSql(status),
+      );
+    }
     map['delivery_token'] = Variable<String>(deliveryToken);
     map['total_amount'] = Variable<double>(totalAmount);
     map['is_synced'] = Variable<bool>(isSynced);
@@ -733,7 +734,9 @@ class OrdersTableData extends DataClass implements Insertable<OrdersTableData> {
     return OrdersTableData(
       id: serializer.fromJson<String>(json['id']),
       customerId: serializer.fromJson<String>(json['customerId']),
-      status: serializer.fromJson<String>(json['status']),
+      status: $OrdersTableTable.$converterstatus.fromJson(
+        serializer.fromJson<String>(json['status']),
+      ),
       deliveryToken: serializer.fromJson<String>(json['deliveryToken']),
       totalAmount: serializer.fromJson<double>(json['totalAmount']),
       isSynced: serializer.fromJson<bool>(json['isSynced']),
@@ -746,7 +749,9 @@ class OrdersTableData extends DataClass implements Insertable<OrdersTableData> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'customerId': serializer.toJson<String>(customerId),
-      'status': serializer.toJson<String>(status),
+      'status': serializer.toJson<String>(
+        $OrdersTableTable.$converterstatus.toJson(status),
+      ),
       'deliveryToken': serializer.toJson<String>(deliveryToken),
       'totalAmount': serializer.toJson<double>(totalAmount),
       'isSynced': serializer.toJson<bool>(isSynced),
@@ -757,7 +762,7 @@ class OrdersTableData extends DataClass implements Insertable<OrdersTableData> {
   OrdersTableData copyWith({
     String? id,
     String? customerId,
-    String? status,
+    OrderStatus? status,
     String? deliveryToken,
     double? totalAmount,
     bool? isSynced,
@@ -829,7 +834,7 @@ class OrdersTableData extends DataClass implements Insertable<OrdersTableData> {
 class OrdersTableCompanion extends UpdateCompanion<OrdersTableData> {
   final Value<String> id;
   final Value<String> customerId;
-  final Value<String> status;
+  final Value<OrderStatus> status;
   final Value<String> deliveryToken;
   final Value<double> totalAmount;
   final Value<bool> isSynced;
@@ -848,7 +853,7 @@ class OrdersTableCompanion extends UpdateCompanion<OrdersTableData> {
   OrdersTableCompanion.insert({
     required String id,
     required String customerId,
-    required String status,
+    required OrderStatus status,
     required String deliveryToken,
     required double totalAmount,
     this.isSynced = const Value.absent(),
@@ -884,7 +889,7 @@ class OrdersTableCompanion extends UpdateCompanion<OrdersTableData> {
   OrdersTableCompanion copyWith({
     Value<String>? id,
     Value<String>? customerId,
-    Value<String>? status,
+    Value<OrderStatus>? status,
     Value<String>? deliveryToken,
     Value<double>? totalAmount,
     Value<bool>? isSynced,
@@ -913,7 +918,9 @@ class OrdersTableCompanion extends UpdateCompanion<OrdersTableData> {
       map['customer_id'] = Variable<String>(customerId.value);
     }
     if (status.present) {
-      map['status'] = Variable<String>(status.value);
+      map['status'] = Variable<String>(
+        $OrdersTableTable.$converterstatus.toSql(status.value),
+      );
     }
     if (deliveryToken.present) {
       map['delivery_token'] = Variable<String>(deliveryToken.value);
@@ -1216,7 +1223,7 @@ typedef $$OrdersTableTableCreateCompanionBuilder =
     OrdersTableCompanion Function({
       required String id,
       required String customerId,
-      required String status,
+      required OrderStatus status,
       required String deliveryToken,
       required double totalAmount,
       Value<bool> isSynced,
@@ -1227,7 +1234,7 @@ typedef $$OrdersTableTableUpdateCompanionBuilder =
     OrdersTableCompanion Function({
       Value<String> id,
       Value<String> customerId,
-      Value<String> status,
+      Value<OrderStatus> status,
       Value<String> deliveryToken,
       Value<double> totalAmount,
       Value<bool> isSynced,
@@ -1254,10 +1261,11 @@ class $$OrdersTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get status => $composableBuilder(
-    column: $table.status,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<OrderStatus, OrderStatus, String> get status =>
+      $composableBuilder(
+        column: $table.status,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<String> get deliveryToken => $composableBuilder(
     column: $table.deliveryToken,
@@ -1342,7 +1350,7 @@ class $$OrdersTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get status =>
+  GeneratedColumnWithTypeConverter<OrderStatus, String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
   GeneratedColumn<String> get deliveryToken => $composableBuilder(
@@ -1395,7 +1403,7 @@ class $$OrdersTableTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> customerId = const Value.absent(),
-                Value<String> status = const Value.absent(),
+                Value<OrderStatus> status = const Value.absent(),
                 Value<String> deliveryToken = const Value.absent(),
                 Value<double> totalAmount = const Value.absent(),
                 Value<bool> isSynced = const Value.absent(),
@@ -1415,7 +1423,7 @@ class $$OrdersTableTableTableManager
               ({
                 required String id,
                 required String customerId,
-                required String status,
+                required OrderStatus status,
                 required String deliveryToken,
                 required double totalAmount,
                 Value<bool> isSynced = const Value.absent(),

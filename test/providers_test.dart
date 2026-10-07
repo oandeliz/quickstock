@@ -6,6 +6,7 @@ import 'package:quickstock/core/providers/database_provider.dart';
 import 'package:quickstock/features/delivery/presentation/providers/delivery_notifier.dart';
 import 'package:quickstock/features/inventory/presentation/providers/inventory_notifier.dart';
 import 'package:quickstock/features/orders/presentation/providers/order_notifier.dart';
+import 'package:quickstock/core/database/tables/orders_table.dart';
 
 void main() {
   late AppDatabase db;
@@ -79,7 +80,7 @@ void main() {
 
     final order = await (db.select(db.ordersTable)..where((t) => t.id.equals(orderId))).getSingle();
     
-    expect(order.status, 'PENDING');
+    expect(order.status, OrderStatus.pending);
     expect(order.deliveryToken, isNotNull);
     expect(order.deliveryToken.length, 9);
     expect(order.deliveryToken.startsWith('QS-'), true);

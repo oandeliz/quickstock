@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:quickstock/core/database/app_database.dart';
 import 'package:quickstock/core/providers/database_provider.dart';
+import 'package:quickstock/core/database/tables/orders_table.dart';
 
 part 'order_notifier.g.dart';
 
@@ -27,7 +28,7 @@ class OrderNotifier extends _$OrderNotifier {
 
         id: orderId,
         customerId: customerId,
-        status: 'PENDING',
+        status: OrderStatus.pending,
         deliveryToken: token,
         totalAmount: totalAmount,
       )

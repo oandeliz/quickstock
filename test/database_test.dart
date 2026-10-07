@@ -1,6 +1,7 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quickstock/core/database/app_database.dart';
+import 'package:quickstock/core/database/tables/orders_table.dart';
 
 void main() {
   late AppDatabase db;
@@ -32,7 +33,7 @@ void main() {
     final order = OrdersTableCompanion.insert(
       id: 'ord-1',
       customerId: 'cust-1',
-      status: 'PENDING',
+      status: OrderStatus.pending,
       deliveryToken: 'QS-123456',
       totalAmount: 50.0,
     );
@@ -43,14 +44,14 @@ void main() {
     await db.confirmDelivery('ord-1', 'QS-123456');
     
     final updatedOrder = await (db.select(db.ordersTable)..where((t) => t.id.equals('ord-1'))).getSingle();
-    expect(updatedOrder.status, 'DELIVERED');
+    expect(updatedOrder.status, OrderStatus.delivered);
   });
 
   test('Test 3: Call confirmDelivery with invalid token throws Exception and status remains PENDING', () async {
     final order = OrdersTableCompanion.insert(
       id: 'ord-2',
       customerId: 'cust-2',
-      status: 'PENDING',
+      status: OrderStatus.pending,
       deliveryToken: 'QS-123456',
       totalAmount: 50.0,
     );
@@ -61,6 +62,6 @@ void main() {
     expect(() => db.confirmDelivery('ord-2', 'WRONG-TOKEN'), throwsException);
     
     final updatedOrder = await (db.select(db.ordersTable)..where((t) => t.id.equals('ord-2'))).getSingle();
-    expect(updatedOrder.status, 'PENDING');
+    expect(updatedOrder.status, OrderStatus.pending);
   });
 }

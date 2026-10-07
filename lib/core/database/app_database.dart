@@ -39,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
 
   Stream<List<OrdersTableData>> watchPendingOrders() {
     return (select(ordersTable)
-          ..where((t) => t.status.isIn(['PENDING', 'OUT_FOR_DELIVERY'])))
+          ..where((t) => t.status.isInValues([OrderStatus.pending, OrderStatus.outForDelivery])))
         .watch();
   }
 
@@ -50,7 +50,7 @@ class AppDatabase extends _$AppDatabase {
           .getSingle();
       if (order.deliveryToken == token) {
         await update(ordersTable).replace(
-          order.copyWith(status: 'DELIVERED'),
+          order.copyWith(status: OrderStatus.delivered),
         );
       } else {
         throw Exception('Invalid delivery token');
