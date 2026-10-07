@@ -13,6 +13,7 @@ part 'app_database.g.dart';
 @DriftDatabase(tables: [ProductsTable, OrdersTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
+  AppDatabase.forTesting(super.e);
 
   @override
   int get schemaVersion => 1;
