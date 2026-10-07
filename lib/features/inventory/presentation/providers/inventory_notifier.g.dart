@@ -25,7 +25,43 @@ final inventoryRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef InventoryRepositoryRef = AutoDisposeProviderRef<InventoryRepository>;
-String _$inventoryNotifierHash() => r'1363857f8c3e1cc2df7be467641a4fe2a4cbeb4c';
+String _$filteredProductsHash() => r'7e2a2fb64bf9de92066e31ec246b2a4a339a5938';
+
+/// See also [filteredProducts].
+@ProviderFor(filteredProducts)
+final filteredProductsProvider =
+    AutoDisposeProvider<List<ProductsTableData>>.internal(
+      filteredProducts,
+      name: r'filteredProductsProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$filteredProductsHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef FilteredProductsRef = AutoDisposeProviderRef<List<ProductsTableData>>;
+String _$lowStockProductsHash() => r'801dc58a53525b0052d7839f9ebcf662e7914cf9';
+
+/// See also [lowStockProducts].
+@ProviderFor(lowStockProducts)
+final lowStockProductsProvider =
+    AutoDisposeProvider<List<ProductsTableData>>.internal(
+      lowStockProducts,
+      name: r'lowStockProductsProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$lowStockProductsHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef LowStockProductsRef = AutoDisposeProviderRef<List<ProductsTableData>>;
+String _$inventoryNotifierHash() => r'e07e3afbbad68c2c6d65540f762439c4253e6857';
 
 /// See also [InventoryNotifier].
 @ProviderFor(InventoryNotifier)
@@ -45,5 +81,22 @@ final inventoryNotifierProvider =
 
 typedef _$InventoryNotifier =
     AutoDisposeStreamNotifier<List<ProductsTableData>>;
+String _$productSearchQueryHash() =>
+    r'93d9af36560d846f0053a881a4a8c05edb0f0f7d';
+
+/// See also [ProductSearchQuery].
+@ProviderFor(ProductSearchQuery)
+final productSearchQueryProvider =
+    AutoDisposeNotifierProvider<ProductSearchQuery, String>.internal(
+      ProductSearchQuery.new,
+      name: r'productSearchQueryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$productSearchQueryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$ProductSearchQuery = AutoDisposeNotifier<String>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

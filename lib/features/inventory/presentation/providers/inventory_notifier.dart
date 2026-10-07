@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:quickstock/core/database/app_database.dart';
 import 'package:quickstock/core/providers/database_provider.dart';
@@ -29,4 +30,43 @@ class InventoryNotifier extends _$InventoryNotifier {
     final repository = ref.read(inventoryRepositoryProvider);
     await repository.syncProductsFromCloud();
   }
+
+  Future<void> addNewProduct({
+    required String title,
+    required double price,
+    required int stockCount,
+    String? description,
+  }) async {
+    final db = ref.read(appDatabaseProvider);
+    await db.into(db.productsTable).insert(
+          ProductsTableCompanion.insert(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            title: title,
+            price: price,
+            stockCount: stockCount,
+            description: description != null ? Value(description) : const Value.absent(),
+          ),
+        );
+  }
+}
+
+@riverpod
+class ProductSearchQuery extends _$ProductSearchQuery {
+  @override
+  String build() => '';
+  void update(String query) => state = query;
+}
+
+@riverpod
+List<ProductsTableData> filteredProducts(FilteredProductsRef ref) {
+  final query = ref.watch(productSearchQueryProvider).toLowerCase().trim();
+  final inventory = ref.watch(inventoryNotifierProvider).value ?? [];
+  if (query.isEmpty) return inventory;
+  return inventory.where((p) => p.title.toLowerCase().contains(query)).toList();
+}
+
+@riverpod
+List<ProductsTableData> lowStockProducts(LowStockProductsRef ref) {
+  final inventory = ref.watch(inventoryNotifierProvider).value ?? [];
+  return inventory.where((p) => p.stockCount < 5).toList();
 }

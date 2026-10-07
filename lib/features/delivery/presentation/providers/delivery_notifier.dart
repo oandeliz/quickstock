@@ -19,12 +19,12 @@ class DeliveryNotifier extends _$DeliveryNotifier {
       final order = await (db.select(db.ordersTable)
         ..where((t) => t.id.equals(orderId))).getSingle();
         
-      if (order.deliveryToken == scannedToken) {
+      if (order.deliveryToken == scannedToken.trim()) {
         await db.confirmDelivery(orderId, scannedToken);
         state = const AsyncData(null);
         return true;
       } else {
-        state = AsyncError('Invalid delivery token', StackTrace.current);
+        state = AsyncError('Verification failed: Invalid token', StackTrace.current);
         return false;
       }
     } catch (e, st) {
