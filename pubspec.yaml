@@ -45,6 +45,7 @@ dependencies:
   riverpod_annotation: ^2.3.5
   mobile_scanner: ^7.4.2
   qr_flutter: ^4.1.0
+  drift_flutter: ^0.2.7
 
 dev_dependencies:
   flutter_test:
