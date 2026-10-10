@@ -677,7 +677,7 @@ class $OrdersTableTable extends OrdersTable
   }
 
   static JsonTypeConverter2<OrderStatus, String, String> $converterstatus =
-      const EnumNameConverter(OrderStatus.values);
+      const EnumNameConverter<OrderStatus>(OrderStatus.values);
 }
 
 class OrdersTableData extends DataClass implements Insertable<OrdersTableData> {

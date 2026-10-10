@@ -43,6 +43,10 @@ class AppDatabase extends _$AppDatabase {
         .watch();
   }
 
+  Stream<List<OrdersTableData>> watchCompletedOrders() {
+    return (select(ordersTable)..where((t) => t.status.equalsValue(OrderStatus.delivered))).watch();
+  }
+
   Future<void> confirmDelivery(String orderId, String token) {
     return transaction(() async {
       final order = await (select(ordersTable)

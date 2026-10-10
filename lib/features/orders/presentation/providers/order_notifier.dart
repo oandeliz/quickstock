@@ -37,3 +37,9 @@ class OrderNotifier extends _$OrderNotifier {
     return orderId;
   }
 }
+
+@riverpod
+Stream<List<OrdersTableData>> completedOrders(CompletedOrdersRef ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return db.watchCompletedOrders();
+}
