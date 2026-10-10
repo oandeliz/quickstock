@@ -51,3 +51,14 @@ lib/
 │       ├── presentation/providers/# DeliveryNotifier
 │       └── presentation/widgets/  # DeliveryScannerView
 └── main.dart                      # App entry point, ProviderScope, and navigation harness
+```
+
+---
+
+## 📅 Engineering Sprint Roadmap
+
+- [x] **Day 1:** Project scaffolding, Amplify Gen 2 sandbox initialization.
+- [x] **Day 2:** Drift local database architecture and offline repository layer.
+- [x] **Day 3:** Riverpod reactive state binding and mock data hydration.
+- [x] **Day 4:** Customer QR code generator (qr_flutter) & driver camera scanner (mobile_scanner).
+- [ ] **Day 5 (In Progress):** Multi-role dashboard UI (Business Owner, Driver, Customer, Warehouse) + global catalog search.
