@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quickstock/features/inventory/presentation/providers/inventory_notifier.dart';
 import 'package:quickstock/features/orders/presentation/providers/order_notifier.dart';
+import 'package:quickstock/features/admin/data/team_invitation_service.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -177,9 +178,29 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   child: const Text('Cancel'),
                 ),
                 FilledButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    final name = nameCtrl.text.trim();
+                    final email = emailCtrl.text.trim();
+                    if (name.isEmpty || email.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please enter both name and email.')),
+                      );
+                      return;
+                    }
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invitation sent to ${emailCtrl.text}')));
+                    await ref.read(teamMembersProvider.notifier).inviteMember(
+                          name: name,
+                          email: email,
+                          role: selectedRole,
+                        );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Invitation email sent to $email with temporary sign-in credentials.'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
                   },
                   child: const Text('Send Invite'),
                 ),
@@ -196,6 +217,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final productsAsync = ref.watch(inventoryNotifierProvider);
     final lowStock = ref.watch(lowStockProductsProvider);
     final ordersAsync = ref.watch(orderNotifierProvider);
+    final teamMembers = ref.watch(teamMembersProvider);
     final theme = Theme.of(context);
 
     double totalValuation = 0.0;
@@ -281,14 +303,14 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             const SizedBox(height: 12),
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Column(
-                children: [
-                  _buildTeamMemberTile('Sarah Jenkins', 'Manager', Colors.deepPurple),
-                  const Divider(height: 1),
-                  _buildTeamMemberTile('Mike Ross', 'Driver', Colors.green),
-                  const Divider(height: 1),
-                  _buildTeamMemberTile('Carlos Ruiz', 'Warehouse Worker', Colors.orange),
-                ],
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: teamMembers.length,
+                separatorBuilder: (_, _) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  return _buildTeamMemberTile(teamMembers[index]);
+                },
               ),
             ),
             const SizedBox(height: 32),
@@ -337,21 +359,71 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildTeamMemberTile(String name, String role, Color roleColor) {
+  Widget _buildTeamMemberTile(TeamMember member) {
+    final roleColor = switch (member.role.toLowerCase()) {
+      'manager' => Colors.deepPurple,
+      'driver' => Colors.green,
+      'warehouse worker' || 'worker' => Colors.orange,
+      _ => Colors.blue,
+    };
+
+    final isPending = member.status == TeamMemberStatus.pendingInvite;
+
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: roleColor.withValues(alpha: 0.1),
-        child: Text(name[0], style: TextStyle(color: roleColor, fontWeight: FontWeight.bold)),
+        child: Text(
+          member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
+          style: TextStyle(color: roleColor, fontWeight: FontWeight.bold),
+        ),
       ),
-      title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: const Text('Active'),
+      title: Row(
+        children: [
+          Flexible(
+            child: Text(
+              member.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (isPending) ...[
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.amber.shade100,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: Colors.amber.shade400),
+              ),
+              child: Text(
+                'Pending Invite',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.amber.shade900,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+      subtitle: Text(
+        '${member.email} • ${isPending ? "Invited" : "Active"}',
+        style: TextStyle(
+          color: isPending ? Colors.amber.shade900 : Colors.grey.shade600,
+          fontSize: 12,
+        ),
+      ),
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
           color: roleColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Text(role, style: TextStyle(color: roleColor, fontSize: 12, fontWeight: FontWeight.bold)),
+        child: Text(
+          member.role,
+          style: TextStyle(color: roleColor, fontSize: 12, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quickstock/core/auth/data/auth_repository.dart';
+import 'package:quickstock/features/auth/presentation/screens/customer_register_screen.dart';
 
 enum LoginPortalType { customer, staff }
 
@@ -181,27 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     newPasswordController.dispose();
   }
 
-  void _showCreateAccountInfo() {
-    showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Customer Registration'),
-          content: const Text(
-            'Customer accounts allow saving order histories, addresses, and instant 1-tap checkout. '
-            'Self-service customer registration is enabled via Amazon Cognito. '
-            'You may also continue browsing or checking out as a Guest!',
-          ),
-          actions: [
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Got it'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -416,7 +397,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   if (_selectedPortal == LoginPortalType.customer)
                     Center(
                       child: TextButton(
-                        onPressed: _showCreateAccountInfo,
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const CustomerRegisterScreen(),
+                            ),
+                          );
+                        },
                         child: const Text('Don\'t have an account? Create Customer Account'),
                       ),
                     ),
