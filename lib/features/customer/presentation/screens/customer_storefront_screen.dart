@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quickstock/features/inventory/presentation/providers/inventory_notifier.dart';
 import 'package:quickstock/features/customer/presentation/providers/cart_provider.dart';
 import 'package:quickstock/features/customer/presentation/widgets/cart_checkout_sheet.dart';
+import 'package:quickstock/features/auth/presentation/screens/login_screen.dart';
 
 class CustomerStorefrontScreen extends ConsumerWidget {
   const CustomerStorefrontScreen({super.key});
@@ -66,7 +67,11 @@ class CustomerStorefrontScreen extends ConsumerWidget {
         title: const Text('QuickStock', style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
             child: const Text('Sign In / Register'),
           ),
           Stack(
