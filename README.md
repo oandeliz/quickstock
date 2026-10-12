@@ -61,4 +61,5 @@ lib/
 - [x] **Day 2:** Drift local database architecture and offline repository layer.
 - [x] **Day 3:** Riverpod reactive state binding and mock data hydration.
 - [x] **Day 4:** Customer QR code generator (qr_flutter) & driver camera scanner (mobile_scanner).
-- [ ] **Day 5 (In Progress):** Multi-role dashboard UI (Business Owner, Driver, Customer, Warehouse) + global catalog search.
+- [x] **Day 5:** Multi-role dashboard UI (Business Owner, Driver, Customer, Warehouse) + global catalog search.
+- [ ] **Day 6 (In Progress):** AWS Cognito authentication, multi-role access control, and user session management.
