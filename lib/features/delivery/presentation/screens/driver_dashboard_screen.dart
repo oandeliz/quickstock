@@ -26,7 +26,7 @@ class _DriverDashboardScreenState extends ConsumerState<DriverDashboardScreen> w
     super.dispose();
   }
 
-  void _openScanner(BuildContext context, String orderId) async {
+  void _openScanner(String orderId) async {
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -40,8 +40,7 @@ class _DriverDashboardScreenState extends ConsumerState<DriverDashboardScreen> w
       ),
     );
 
-    if (result == true) {
-      if (!mounted) return;
+    if (result == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Delivery successful! Moved to completed stops.')),
       );
@@ -129,7 +128,7 @@ class _DriverDashboardScreenState extends ConsumerState<DriverDashboardScreen> w
         return ListView.separated(
           padding: const EdgeInsets.all(16),
           itemCount: orders.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             final order = orders[index];
             return Card(
@@ -183,7 +182,7 @@ class _DriverDashboardScreenState extends ConsumerState<DriverDashboardScreen> w
                     ),
                     const SizedBox(height: 16),
                     FilledButton.icon(
-                      onPressed: () => _openScanner(context, order.id),
+                      onPressed: () => _openScanner(order.id),
                       icon: const Icon(Icons.qr_code_scanner),
                       label: const Text('Verify Drop-off'),
                       style: FilledButton.styleFrom(
@@ -212,7 +211,7 @@ class _DriverDashboardScreenState extends ConsumerState<DriverDashboardScreen> w
         return ListView.separated(
           padding: const EdgeInsets.all(16),
           itemCount: orders.length,
-          separatorBuilder: (_, __) => const Divider(),
+          separatorBuilder: (_, _) => const Divider(),
           itemBuilder: (context, index) {
             final order = orders[index];
             return ListTile(

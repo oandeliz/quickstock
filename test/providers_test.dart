@@ -28,7 +28,7 @@ void main() {
 
   test('Test 1: Call inventoryNotifierProvider.notifier.addNewProduct(...) and verify filteredProductsProvider reflects the new item', () async {
     // Start listening to the provider so it initializes
-    final subscription = container.listen(filteredProductsProvider, (_, __) {});
+    final subscription = container.listen(filteredProductsProvider, (_, _) {});
     
     // Give stream time to initialize
     await Future.delayed(Duration.zero);
@@ -52,7 +52,7 @@ void main() {
   });
 
   test('Test 2: Call productSearchQueryProvider.notifier.update(...) with a specific term and verify filteredProductsProvider filters the list correctly', () async {
-    final subscription = container.listen(filteredProductsProvider, (_, __) {});
+    final subscription = container.listen(filteredProductsProvider, (_, _) {});
     final inventoryNotifier = container.read(inventoryNotifierProvider.notifier);
     
     await inventoryNotifier.addNewProduct(title: 'Apple', price: 1.0, stockCount: 10);
